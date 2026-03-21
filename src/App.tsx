@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useMemo, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { FiPause, FiPlay, FiVolume2, FiVolumeX } from 'react-icons/fi'
 import './App.css'
@@ -29,17 +29,29 @@ export default function App() {
     [],
   )
 
-  // Paso automático de flores al video
-  useEffect(() => {
-    if (phase === 'flowers-in') {
-      const id = setTimeout(() => setPhase('video'), 2500)
-      return () => clearTimeout(id)
-    }
-  }, [phase])
+  const secretFlower = useMemo(
+    () => ({
+      xPos: 10 + Math.random() * 80,
+      yPos: 10 + Math.random() * 80,
+    }),
+    [],
+  )
 
   const handleVideoEnd = () => {
     setIsPlaying(false)
     setPhase('flowers-out')
+  }
+
+  const handleSecretClick = () => {
+    setPhase('video')
+    setProgress(0)
+    setIsPlaying(true)
+    setIsMuted(true)
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0
+      videoRef.current.muted = true
+      videoRef.current.play().catch(() => setIsPlaying(false))
+    }
   }
 
   const restart = () => {
@@ -105,6 +117,7 @@ export default function App() {
 
   return (
     <div className="stage">
+      <div className="title-banner">Para mi Bonita</div>
       <div className="vine-frame" aria-hidden="true">
         <div className="vine-top" />
         <div className="vine-bottom" />
@@ -133,6 +146,19 @@ export default function App() {
                 transition={{ delay: spec.delay, duration: 0.9, ease: 'easeOut' }}
               />
             ))}
+            <motion.span
+              key="secret-flower"
+              className="flower special"
+              style={{ '--x': `${secretFlower.xPos}`, '--y': `${secretFlower.yPos}` } as CSSProperties}
+              initial={{ scale: 0.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.2, opacity: 0 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              onClick={handleSecretClick}
+              aria-label="Ver el video"
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -185,17 +211,7 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {phase === 'flowers-out' && (
-        <motion.button
-          className="restart"
-          onClick={restart}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5, ease: 'easeOut' }}
-        >
-          Ver nuevamente
-        </motion.button>
-      )}
+      {/* La flor especial actúa como gatillo de reinicio, así que no se muestra un botón */}
     </div>
   )
 }

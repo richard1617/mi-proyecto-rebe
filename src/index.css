@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Satisfy&display=swap');
 
 :root {
   --text: #6b6375;
@@ -15,6 +15,7 @@
 
   --sans: 'Quicksand', 'Segoe UI', system-ui, sans-serif;
   --heading: 'Quicksand', 'Segoe UI', system-ui, sans-serif;
+  --script: 'Satisfy', 'Segoe Script', cursive;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
