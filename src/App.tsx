@@ -1,6 +1,6 @@
-import { useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FiPause, FiPlay, FiVolume2, FiVolumeX } from 'react-icons/fi'
+import { FiMaximize, FiMinimize, FiPause, FiPlay, FiVolume2, FiVolumeX } from 'react-icons/fi'
 import './App.css'
 
 const flowerCount = 140
@@ -10,10 +10,12 @@ export default function App() {
     'flowers-in',
   )
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const frameRef = useRef<HTMLDivElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   // Precompute variaciones para que cada flor florezca diferente
   const flowers = useMemo(
@@ -108,6 +110,27 @@ export default function App() {
     setProgress(value)
   }
 
+  const toggleFullscreen = async () => {
+    if (!frameRef.current) return
+    try {
+      if (!document.fullscreenElement) {
+        await frameRef.current.requestFullscreen()
+      } else {
+        await document.exitFullscreen()
+      }
+    } catch {
+      // Ignore failures (likely user gesture restrictions)
+    }
+  }
+
+  useEffect(() => {
+    const onFullScreenChange = () => {
+      setIsFullscreen(Boolean(document.fullscreenElement))
+    }
+    document.addEventListener('fullscreenchange', onFullScreenChange)
+    return () => document.removeEventListener('fullscreenchange', onFullScreenChange)
+  }, [])
+
   const formatTime = (seconds: number) => {
     if (!isFinite(seconds)) return '0:00'
     const m = Math.floor(seconds / 60)
@@ -173,7 +196,7 @@ export default function App() {
             exit={{ opacity: 0, scale: 0.98 }}
             transition={{ duration: 0.6, ease: 'easeInOut' }}
           >
-            <div className="video-frame">
+            <div className="video-frame" ref={frameRef}>
               <div className="frame-decoration" aria-hidden="true" />
               <video
                 ref={videoRef}
@@ -192,6 +215,13 @@ export default function App() {
                 </button>
                 <button className="control icon" onClick={toggleMute} aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}>
                   {isMuted ? <FiVolumeX /> : <FiVolume2 />}
+                </button>
+                <button
+                  className="control icon"
+                  onClick={toggleFullscreen}
+                  aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+                >
+                  {isFullscreen ? <FiMinimize /> : <FiMaximize />}
                 </button>
                 <div className="time">
                   {formatTime((progress / 100) * duration)} / {formatTime(duration)}

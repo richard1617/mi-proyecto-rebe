@@ -189,6 +189,7 @@ body {
   position: relative;
   width: 100%;
   max-height: 58vh;
+  aspect-ratio: 16 / 9;
   border-radius: 18px;
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.2);
   border: 6px solid #ffd166;
@@ -304,12 +305,13 @@ body {
 
   .video-frame {
     width: 100%;
+    max-width: 620px;
     padding: 12px;
     border-radius: 18px;
   }
 
   .video {
-    max-height: 55vh;
+    max-height: 42vh;
     border-width: 4px;
   }
 
