@@ -37,7 +37,7 @@ const letters: Letter[] = [
   { id: 'flor-azul', title: 'Mi flor azul', subtitle: 'Una carta especial', type: 'image', src: '/letters/flor-azul-html.jpg', theme: 'blue' },
   { id: 'flor-azul-pdf', title: 'Mi flor azul - PDF', subtitle: 'Versión imagen de la carta', type: 'image', src: '/letters/flor-azul.jpg', theme: 'blue' },
   { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'html', src: '/letters/aniversario.html', theme: 'rose' },
-  { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'image', src: '/letters/medieval.jpg', theme: 'gold' },
+  { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'html', src: '/letters/medieval.html', theme: 'gold' },
   { id: 'cita', title: 'Carta de cita', subtitle: 'Una invitacion muy especial', type: 'image', src: '/letters/carta-cita.jpg', theme: 'rose' },
   { id: 'indumentaria', title: 'Indumentaria', subtitle: 'Ideas para nuestra cita', type: 'image', src: '/letters/indumentaria-cita.jpg', theme: 'green' },
   { id: 'seis-meses', title: '6 meses a tu lado', subtitle: 'Nuestro tiempo juntas', type: 'image', src: '/letters/seis-meses.jpg', theme: 'rose' },
