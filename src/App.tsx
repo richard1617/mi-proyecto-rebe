@@ -35,14 +35,14 @@ type Letter = {
 }
 
 const letters: Letter[] = [
-  { id: 'flor-azul', title: 'Mi flor azul', subtitle: 'Una carta especial', type: 'image', src: '/letters/flor-azul-html.jpg', preview: '/letters/flor-azul-html.jpg', theme: 'blue' },
-  { id: 'flor-azul-pdf', title: 'Mi flor azul - PDF', subtitle: 'Versión imagen de la carta', type: 'image', src: '/letters/flor-azul.jpg', preview: '/letters/flor-azul.jpg', theme: 'blue' },
-  { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'html', src: '/letters/aniversario.html', preview: '/letters/aniversario.png', theme: 'rose' },
-  { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'html', src: '/letters/medieval.html', preview: '/letters/medieval.jpg', theme: 'gold' },
-  { id: 'cita', title: 'Carta de cita', subtitle: 'Una invitacion muy especial', type: 'image', src: '/letters/carta-cita.jpg', preview: '/letters/carta-cita.jpg', theme: 'rose' },
-  { id: 'indumentaria', title: 'Indumentaria', subtitle: 'Ideas para nuestra cita', type: 'image', src: '/letters/indumentaria-cita.jpg', preview: '/letters/indumentaria-cita.jpg', theme: 'green' },
-  { id: 'seis-meses', title: '6 meses a tu lado', subtitle: 'Nuestro tiempo juntas', type: 'image', src: '/letters/seis-meses.jpg', preview: '/letters/seis-meses.jpg', theme: 'rose' },
-  { id: 'carta-moderna', title: 'Carta moderna', subtitle: 'Para mi persona favorita', type: 'image', src: '/letters/carta-moderna.png', preview: '/letters/carta-moderna.png', theme: 'blue' },
+  { id: 'flor-azul', title: 'Mi flor azul', subtitle: 'Una carta especial', type: 'image', src: '/letters/Carta_para_mi_flor_azul_html.png', preview: '/letters/Carta_para_mi_flor_azul_html.png', theme: 'blue' },
+  { id: 'flor-azul-pdf', title: 'Mi flor azul - PDF', subtitle: 'Versión PDF de la carta', type: 'image', src: '/letters/Carta_para_mi_flor_azul_pdf.png', preview: '/letters/Carta_para_mi_flor_azul_pdf.png', theme: 'blue' },
+  { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'image', src: '/letters/aniversario_rebe.png', preview: '/letters/aniversario_rebe.png', theme: 'rose' },
+  { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'image', src: '/letters/carta_medieval_rebeka.png', preview: '/letters/carta_medieval_rebeka.png', theme: 'gold' },
+  { id: 'cita', title: 'Carta de cita', subtitle: 'Una invitacion muy especial', type: 'image', src: '/letters/Carta_de_Cita.png', preview: '/letters/Carta_de_Cita.png', theme: 'rose' },
+  { id: 'indumentaria', title: 'Indumentaria', subtitle: 'Ideas para nuestra cita', type: 'image', src: '/letters/Indumentaria_para_cita.png', preview: '/letters/Indumentaria_para_cita.png', theme: 'green' },
+  { id: 'seis-meses', title: '6 meses a tu lado', subtitle: 'Nuestro tiempo juntas', type: 'image', src: '/letters/6_meses_a_tu_lado.png', preview: '/letters/6_meses_a_tu_lado.png', theme: 'rose' },
+  { id: 'carta-moderna', title: 'Carta moderna', subtitle: 'Para mi persona favorita', type: 'image', src: '/letters/Documento A4 carta de amor moderna blanco.png', preview: '/letters/Documento A4 carta de amor moderna blanco.png', theme: 'blue' },
 ]
 
 export default function App() {
