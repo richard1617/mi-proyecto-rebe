@@ -35,13 +35,13 @@ type Letter = {
 
 const letters: Letter[] = [
   { id: 'flor-azul', title: 'Mi flor azul', subtitle: 'Una carta especial', type: 'html', src: '/letters/flor-azul.html', theme: 'blue' },
+  { id: 'flor-azul-pdf', title: 'Mi flor azul - PDF', subtitle: 'Versión PDF de la carta', type: 'pdf', src: '/letters/flor-azul.pdf', theme: 'blue' },
   { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'html', src: '/letters/aniversario.html', theme: 'rose' },
   { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'html', src: '/letters/medieval.html', theme: 'gold' },
   { id: 'cita', title: 'Carta de cita', subtitle: 'Una invitacion muy especial', type: 'pdf', src: '/letters/carta-cita.pdf', theme: 'rose' },
   { id: 'indumentaria', title: 'Indumentaria', subtitle: 'Ideas para nuestra cita', type: 'pdf', src: '/letters/indumentaria-cita.pdf', theme: 'green' },
   { id: 'seis-meses', title: '6 meses a tu lado', subtitle: 'Nuestro tiempo juntas', type: 'pdf', src: '/letters/seis-meses.pdf', theme: 'rose' },
   { id: 'carta-moderna', title: 'Carta moderna', subtitle: 'Para mi persona favorita', type: 'image', src: '/letters/carta-moderna.png', theme: 'blue' },
-  { id: 'de-mi-para-mia', title: 'De mi para mi', subtitle: 'Una carta desde el corazon', type: 'pdf', src: '/letters/de-mi-para-mia.pdf', theme: 'gold' },
 ]
 
 export default function App() {
@@ -57,7 +57,7 @@ export default function App() {
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [videoTheme, setVideoTheme] = useState<'yellow' | 'blue'>('yellow')
+  const [videoTheme, setVideoTheme] = useState<'yellow' | 'blue' | 'red'>('yellow')
 
   // Precompute variaciones para que cada flor florezca diferente
   const flowers = useMemo(() => flowerSpecs, [])
@@ -99,6 +99,7 @@ export default function App() {
   }
 
   const openGallery = () => {
+    setVideoTheme('red')
     setPhase('gallery')
   }
 
