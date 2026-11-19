@@ -28,7 +28,7 @@ type Letter = {
   id: string
   title: string
   subtitle: string
-  type: 'image'
+  type: 'html' | 'image'
   src: string
   theme: 'rose' | 'gold' | 'blue' | 'green'
 }
@@ -36,7 +36,7 @@ type Letter = {
 const letters: Letter[] = [
   { id: 'flor-azul', title: 'Mi flor azul', subtitle: 'Una carta especial', type: 'image', src: '/letters/flor-azul-html.jpg', theme: 'blue' },
   { id: 'flor-azul-pdf', title: 'Mi flor azul - PDF', subtitle: 'Versión imagen de la carta', type: 'image', src: '/letters/flor-azul.jpg', theme: 'blue' },
-  { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'image', src: '/letters/aniversario.jpg', theme: 'rose' },
+  { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'html', src: '/letters/aniversario.html', theme: 'rose' },
   { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'image', src: '/letters/medieval.jpg', theme: 'gold' },
   { id: 'cita', title: 'Carta de cita', subtitle: 'Una invitacion muy especial', type: 'image', src: '/letters/carta-cita.jpg', theme: 'rose' },
   { id: 'indumentaria', title: 'Indumentaria', subtitle: 'Ideas para nuestra cita', type: 'image', src: '/letters/indumentaria-cita.jpg', theme: 'green' },
@@ -417,7 +417,15 @@ export default function App() {
               <h2>{selectedLetter.title}</h2>
             </header>
             <div className="letter-document">
-              <img src={selectedLetter.src} alt={selectedLetter.title} />
+              {selectedLetter.type === 'html' ? (
+                <iframe
+                  src={selectedLetter.src}
+                  title={selectedLetter.title}
+                  loading="eager"
+                />
+              ) : (
+                <img src={selectedLetter.src} alt={selectedLetter.title} />
+              )}
             </div>
           </motion.section>
         )}
