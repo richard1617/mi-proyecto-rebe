@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FiMaximize, FiMinimize, FiPause, FiPlay, FiVolume2, FiVolumeX } from 'react-icons/fi'
+import { FiArrowLeft, FiMaximize, FiMinimize, FiPause, FiPlay, FiVolume2, FiVolumeX } from 'react-icons/fi'
 import './App.css'
 
 const flowerCount = 140
@@ -24,14 +24,36 @@ const createFlowerSpecs = () => {
 
 const flowerSpecs = createFlowerSpecs()
 
+type Letter = {
+  id: string
+  title: string
+  subtitle: string
+  type: 'html' | 'pdf' | 'image'
+  src: string
+  theme: 'rose' | 'gold' | 'blue' | 'green'
+}
+
+const letters: Letter[] = [
+  { id: 'flor-azul', title: 'Mi flor azul', subtitle: 'Una carta especial', type: 'html', src: '/letters/flor-azul.html', theme: 'blue' },
+  { id: 'aniversario', title: 'Nuestro aniversario', subtitle: 'Seis meses juntos', type: 'html', src: '/letters/aniversario.html', theme: 'rose' },
+  { id: 'medieval', title: 'Mi Pinwinita', subtitle: 'Carta medieval', type: 'html', src: '/letters/medieval.html', theme: 'gold' },
+  { id: 'cita', title: 'Carta de cita', subtitle: 'Una invitacion muy especial', type: 'pdf', src: '/letters/carta-cita.pdf', theme: 'rose' },
+  { id: 'indumentaria', title: 'Indumentaria', subtitle: 'Ideas para nuestra cita', type: 'pdf', src: '/letters/indumentaria-cita.pdf', theme: 'green' },
+  { id: 'seis-meses', title: '6 meses a tu lado', subtitle: 'Nuestro tiempo juntas', type: 'pdf', src: '/letters/seis-meses.pdf', theme: 'rose' },
+  { id: 'carta-moderna', title: 'Carta moderna', subtitle: 'Para mi persona favorita', type: 'image', src: '/letters/carta-moderna.png', theme: 'blue' },
+  { id: 'de-mi-para-mia', title: 'De mi para mi', subtitle: 'Una carta desde el corazon', type: 'pdf', src: '/letters/de-mi-para-mia.pdf', theme: 'gold' },
+]
+
 export default function App() {
-  const [phase, setPhase] = useState<'flowers-in' | 'video' | 'flowers-out'>(
+  const [phase, setPhase] = useState<'flowers-in' | 'gallery' | 'letter' | 'video' | 'flowers-out'>(
     'flowers-in',
   )
+  const [selectedLetter, setSelectedLetter] = useState<Letter | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const frameRef = useRef<HTMLDivElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(true)
   const [isMuted, setIsMuted] = useState(true)
+  const [volume, setVolume] = useState(1)
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -42,6 +64,10 @@ export default function App() {
 
   const secretFlower = useMemo(
     () => ({
+      red: {
+        xPos: 50,
+        yPos: 38,
+      },
       yellow: {
         xPos: 24,
         yPos: 34,
@@ -72,6 +98,20 @@ export default function App() {
     }
   }
 
+  const openGallery = () => {
+    setPhase('gallery')
+  }
+
+  const openLetter = (letter: Letter) => {
+    setSelectedLetter(letter)
+    setPhase('letter')
+  }
+
+  const closeLetter = () => {
+    setSelectedLetter(null)
+    setPhase('gallery')
+  }
+
   const togglePlay = () => {
     const v = videoRef.current
     if (!v) return
@@ -87,7 +127,21 @@ export default function App() {
   const toggleMute = () => {
     const v = videoRef.current
     if (!v) return
-    v.muted = !v.muted
+    const nextMuted = !v.muted
+    v.muted = nextMuted
+    if (!nextMuted && v.volume === 0) {
+      v.volume = volume > 0 ? volume : 0.5
+    }
+    setIsMuted(nextMuted)
+  }
+
+  const handleVolume = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = videoRef.current
+    if (!v) return
+    const nextVolume = Number(e.target.value)
+    v.volume = nextVolume
+    v.muted = nextVolume === 0
+    setVolume(nextVolume)
     setIsMuted(v.muted)
   }
 
@@ -116,25 +170,83 @@ export default function App() {
     setProgress(value)
   }
 
+  const returnToFlowers = () => {
+    const v = videoRef.current
+    if (v) v.pause()
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => undefined)
+    } else {
+      const webkitDocument = document as Document & {
+        webkitFullscreenElement?: Element | null
+        webkitExitFullscreen?: () => Promise<void> | void
+      }
+      if (webkitDocument.webkitFullscreenElement) {
+        webkitDocument.webkitExitFullscreen?.()
+      }
+    }
+
+    setIsPlaying(false)
+    setPhase('flowers-in')
+  }
+
   const toggleFullscreen = async () => {
-    if (!frameRef.current) return
+    const frame = frameRef.current
+    const video = videoRef.current
+    if (!frame) return
+
+    type WebkitDocument = Document & {
+      webkitFullscreenElement?: Element | null
+      webkitExitFullscreen?: () => Promise<void> | void
+    }
+    type WebkitFrame = HTMLDivElement & {
+      webkitRequestFullscreen?: () => Promise<void> | void
+    }
+    type WebkitVideo = HTMLVideoElement & {
+      webkitEnterFullscreen?: () => void
+    }
+
+    const webkitDocument = document as WebkitDocument
+    const webkitFrame = frame as WebkitFrame
+    const webkitVideo = video as WebkitVideo | null
+    const fullscreenElement = document.fullscreenElement ?? webkitDocument.webkitFullscreenElement
+
     try {
-      if (!document.fullscreenElement) {
-        await frameRef.current.requestFullscreen()
+      if (!fullscreenElement) {
+        if (frame.requestFullscreen) {
+          await frame.requestFullscreen()
+        } else if (webkitFrame.webkitRequestFullscreen) {
+          await webkitFrame.webkitRequestFullscreen()
+        } else if (webkitVideo?.webkitEnterFullscreen) {
+          webkitVideo.webkitEnterFullscreen()
+        } else {
+          return
+        }
       } else {
-        await document.exitFullscreen()
+        if (document.exitFullscreen) {
+          await document.exitFullscreen()
+        } else if (webkitDocument.webkitExitFullscreen) {
+          await webkitDocument.webkitExitFullscreen()
+        }
       }
     } catch {
-      // Ignore failures (likely user gesture restrictions)
+      // The browser can reject fullscreen outside a direct user gesture.
     }
   }
 
   useEffect(() => {
     const onFullScreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement))
+      setIsFullscreen(Boolean(
+        document.fullscreenElement ??
+        (document as Document & { webkitFullscreenElement?: Element | null }).webkitFullscreenElement,
+      ))
     }
     document.addEventListener('fullscreenchange', onFullScreenChange)
-    return () => document.removeEventListener('fullscreenchange', onFullScreenChange)
+    document.addEventListener('webkitfullscreenchange', onFullScreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullScreenChange)
+      document.removeEventListener('webkitfullscreenchange', onFullScreenChange)
+    }
   }, [])
 
   const formatTime = (seconds: number) => {
@@ -176,6 +288,24 @@ export default function App() {
               />
             ))}
             <motion.span
+              key="red-gallery-flower"
+              className="flower special special-red"
+              style={{ '--x': `${secretFlower.red.xPos}`, '--y': `${secretFlower.red.yPos}` } as CSSProperties}
+              initial={{ scale: 0.2, opacity: 0 }}
+              animate={{ scale: 1.12, opacity: 1 }}
+              exit={{ scale: 0.2, opacity: 0 }}
+              whileHover={{ scale: 1.22 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ delay: 0.45, duration: 0.7, ease: 'easeOut' }}
+              onClick={openGallery}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') openGallery()
+              }}
+              aria-label="Abrir la galeria de cartas"
+            />
+            <motion.span
               key="yellow-secret-flower"
               className="flower special special-yellow"
               style={{ '--x': `${secretFlower.yellow.xPos}`, '--y': `${secretFlower.yellow.yPos}` } as CSSProperties}
@@ -206,6 +336,101 @@ export default function App() {
       </AnimatePresence>
 
       <AnimatePresence>
+        {phase === 'gallery' && (
+          <motion.section
+            key="gallery"
+            className="letter-gallery"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ duration: 0.45 }}
+            aria-label="Galeria de cartas"
+          >
+            <header className="gallery-header">
+              <button className="gallery-back" onClick={() => setPhase('flowers-in')} aria-label="Volver a la pantalla principal">
+                <FiArrowLeft /> Volver
+              </button>
+              <div>
+                <p className="gallery-kicker">Para mi Bonita</p>
+                <h1>Nuestras cartas</h1>
+              </div>
+            </header>
+            <div className="letter-grid">
+              {letters.map((letter) => (
+                <motion.button
+                  type="button"
+                  className={`letter-card theme-${letter.theme}`}
+                  key={letter.id}
+                  onClick={() => openLetter(letter)}
+                  whileHover={{ y: -6 }}
+                  whileTap={{ scale: 0.98 }}
+                  aria-label={`Abrir ${letter.title}`}
+                >
+                  <span className="letter-preview" aria-hidden="true">
+                    {letter.type === 'image' ? (
+                      <img src={letter.src} alt="" />
+                    ) : (
+                      <>
+                        <span className="preview-seal" />
+                        <span className="preview-line" />
+                        <span className="preview-line short" />
+                      </>
+                    )}
+                  </span>
+                  <span className="letter-meta">
+                    <strong>{letter.title}</strong>
+                    <small>{letter.subtitle}</small>
+                  </span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.section>
+        )}
+
+        {phase === 'letter' && selectedLetter && (
+          <motion.section
+            key="letter"
+            className="letter-view"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.98 }}
+            transition={{ duration: 0.35 }}
+            aria-label={selectedLetter.title}
+          >
+            <header className="letter-toolbar">
+              <div className="letter-actions">
+                <button className="gallery-back" onClick={closeLetter} aria-label="Volver a la galeria">
+                  <FiArrowLeft /> Galeria
+                </button>
+                <button
+                  className="gallery-back"
+                  onClick={() => {
+                    setSelectedLetter(null)
+                    setPhase('flowers-in')
+                  }}
+                  aria-label="Volver a la pantalla principal con las flores"
+                >
+                  <FiArrowLeft /> Inicio
+                </button>
+              </div>
+              <h2>{selectedLetter.title}</h2>
+            </header>
+            <div className="letter-document">
+              {selectedLetter.type === 'image' ? (
+                <img src={selectedLetter.src} alt={selectedLetter.title} />
+              ) : (
+                <iframe
+                  src={selectedLetter.src}
+                  title={selectedLetter.title}
+                  loading="eager"
+                />
+              )}
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {phase === 'video' && (
           <motion.div
             key="video"
@@ -229,12 +454,29 @@ export default function App() {
                 className="video"
               />
               <div className="controls">
+                <button
+                  className="control return-control"
+                  onClick={returnToFlowers}
+                  aria-label="Volver a la pantalla principal con las flores"
+                >
+                  <FiArrowLeft /> Inicio
+                </button>
                 <button className="control icon" onClick={togglePlay} aria-label={isPlaying ? 'Pausar' : 'Reproducir'}>
                   {isPlaying ? <FiPause /> : <FiPlay />}
                 </button>
                 <button className="control icon" onClick={toggleMute} aria-label={isMuted ? 'Activar sonido' : 'Silenciar'}>
                   {isMuted ? <FiVolumeX /> : <FiVolume2 />}
                 </button>
+                <input
+                  type="range"
+                  className="volume-slider"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={isMuted ? 0 : volume}
+                  onChange={handleVolume}
+                  aria-label="Volumen"
+                />
                 <button
                   className="control icon"
                   onClick={toggleFullscreen}

@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #c8a96e;
+    background-image: radial-gradient(ellipse at 30% 40%, #d4b87a 0%, #b8924a 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .page {
+    background: #f2e4b8;
+    width: 100%;
+    max-width: 720px;
+    min-height: 900px;
+    border-radius: 2px;
+    box-shadow:
+      0 12px 50px rgba(80,50,10,0.35),
+      0 2px 10px rgba(80,50,10,0.2),
+      inset 0 0 80px rgba(160,110,40,0.12);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 80px 60px 80px;
+  }
+
+  /* Aged paper texture overlay */
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 15% 20%, rgba(180,130,50,0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 75%, rgba(160,110,30,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(200,160,80,0.08) 0%, transparent 70%),
+      radial-gradient(circle at 70% 15%, rgba(140,90,20,0.1) 0%, transparent 35%),
+      radial-gradient(circle at 20% 80%, rgba(150,100,30,0.12) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Paper edge aging */
+  .page::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 120px rgba(120,70,10,0.18);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .botanical-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Lined paper rules */
+  .lines-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 2;
+    overflow: hidden;
+  }
+
+  .content {
+    position: relative;
+    z-index: 3;
+  }
+
+  .header-ornament {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .letter-body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 15.2px;
+    line-height: 2;
+    color: #3d2b0e;
+    text-align: justify;
+  }
+
+  .salutation {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 22px;
+    font-style: italic;
+    color: #6b4820;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .paragraph {
+    margin-bottom: 0;
+    text-indent: 1.5em;
+    line-height: 2;
+  }
+  .paragraph:first-of-type { text-indent: 0; }
+
+  .closing {
+    margin-top: 28px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #6b4820;
+    line-height: 1.8;
+  }
+
+  .signature {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: #5c3a12;
+    margin-top: 4px;
+    display: block;
+  }
+
+  .woff {
+    display: block;
+    margin-top: 4px;
+    font-style: italic;
+    color: #a05838;
+    font-size: 15px;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 22px 0 20px;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #b09060 30%, #b09060 70%, transparent);
+    opacity: 0.45;
+  }
+
+  /* Easter egg Rocky tooltip */
+  .rocky-egg {
+    position: absolute;
+    bottom: 22px;
+    right: 28px;
+    z-index: 10;
+    cursor: pointer;
+    user-select: none;
+  }
+  .rocky-egg svg {
+    opacity: 0.22;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    filter: sepia(0.6);
+  }
+  .rocky-egg:hover svg {
+    opacity: 0.85;
+    transform: scale(1.18);
+    filter: none;
+  }
+  .rocky-tooltip {
+    position: absolute;
+    bottom: 48px;
+    right: -10px;
+    background: #2a1a08;
+    color: #f2e4b8;
+    font-family: 'Lora', serif;
+    font-size: 11px;
+    font-style: italic;
+    padding: 7px 11px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    line-height: 1.5;
+    max-width: 200px;
+    white-space: normal;
+    text-align: center;
+    width: 170px;
+  }
+  .rocky-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; right: 20px;
+    border: 6px solid transparent;
+    border-top-color: #2a1a08;
+  }
+  .rocky-egg:hover .rocky-tooltip {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Lined paper rules -->
+  <div class="lines-layer">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <pattern id="lines" x="0" y="77" width="100%" height="30.4" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="30.4" x2="100%" y2="30.4" stroke="#b09460" stroke-width="0.6" opacity="0.28"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#lines)"/>
+      <!-- Left margin red line faint -->
+      <line x1="74" y1="0" x2="74" y2="100%" stroke="#c08060" stroke-width="0.7" opacity="0.15"/>
+    </svg>
+  </div>
+
+  <!-- Botanical SVG background -->
+  <svg class="botanical-bg" viewBox="0 0 720 1100" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+
+    <!-- TOP LEFT -->
+    <path d="M-10,0 Q30,60 20,120 Q10,180 50,230 Q70,270 40,340" fill="none" stroke="#7a8a5a" stroke-width="2.2" opacity="0.5"/>
+    <path d="M0,20 Q50,70 45,140 Q40,200 80,250" fill="none" stroke="#8a9a6a" stroke-width="1.5" opacity="0.38"/>
+    <ellipse cx="28" cy="85" rx="18" ry="9" fill="#8a9a6a" opacity="0.4" transform="rotate(-30,28,85)"/>
+    <ellipse cx="15" cy="150" rx="22" ry="10" fill="#9aaa7a" opacity="0.32" transform="rotate(20,15,150)"/>
+    <ellipse cx="50" cy="200" rx="16" ry="8" fill="#7a9060" opacity="0.38" transform="rotate(-45,50,200)"/>
+    <ellipse cx="35" cy="270" rx="20" ry="9" fill="#8aaa70" opacity="0.28" transform="rotate(15,35,270)"/>
+    <ellipse cx="55" cy="310" rx="14" ry="7" fill="#9ab870" opacity="0.32" transform="rotate(-20,55,310)"/>
+    <g transform="translate(12, 55)">
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#6090d8" opacity="0.65" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#70a0e8" opacity="0.6" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#80aaee" opacity="0.58" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#6090d8" opacity="0.65" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#70a0e8" opacity="0.6" transform="rotate(288)"/>
+      <circle cx="0" cy="0" r="4" fill="#d4b840" opacity="0.82"/>
+    </g>
+    <g transform="translate(55, 115)">
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#90b4e8" opacity="0.6" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#80a8e0" opacity="0.6" transform="rotate(60)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#90b4e8" opacity="0.55" transform="rotate(120)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#80a8e0" opacity="0.6" transform="rotate(180)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#90b4e8" opacity="0.55" transform="rotate(240)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#80a8e0" opacity="0.6" transform="rotate(300)"/>
+      <circle cx="0" cy="0" r="3" fill="#d0b038" opacity="0.88"/>
+    </g>
+    <g transform="translate(20, 185)">
+      <ellipse cx="0" cy="-10" rx="4" ry="8" fill="#5888d0" opacity="0.55" transform="rotate(30)"/>
+      <ellipse cx="0" cy="-10" rx="4" ry="8" fill="#6898d8" opacity="0.6" transform="rotate(102)"/>
+      <ellipse cx="0" cy="-10" rx="4" ry="8" fill="#5888d0" opacity="0.55" transform="rotate(174)"/>
+      <ellipse cx="0" cy="-10" rx="4" ry="8" fill="#6898d8" opacity="0.6" transform="rotate(246)"/>
+      <ellipse cx="0" cy="-10" rx="4" ry="8" fill="#5888d0" opacity="0.55" transform="rotate(318)"/>
+      <circle cx="0" cy="0" r="3.5" fill="#d4b840" opacity="0.82"/>
+    </g>
+    <ellipse cx="40" cy="240" rx="4" ry="7" fill="#80a8e0" opacity="0.5" transform="rotate(-15,40,240)"/>
+    <ellipse cx="25" cy="320" rx="3" ry="6" fill="#6898d8" opacity="0.45" transform="rotate(10,25,320)"/>
+    <path d="M30,100 Q55,95 50,115 Q45,135 65,130" fill="none" stroke="#8a9a6a" stroke-width="1" opacity="0.38"/>
+    <path d="M25,230 Q5,220 10,245 Q15,260 0,255" fill="none" stroke="#7a9060" stroke-width="1" opacity="0.32"/>
+
+    <!-- TOP RIGHT -->
+    <path d="M730,0 Q690,50 700,120 Q710,190 670,240 Q650,280 680,360" fill="none" stroke="#7a8a5a" stroke-width="2" opacity="0.48"/>
+    <path d="M720,30 Q680,80 685,160" fill="none" stroke="#8a9a6a" stroke-width="1.4" opacity="0.36"/>
+    <ellipse cx="692" cy="80" rx="20" ry="9" fill="#8a9a6a" opacity="0.38" transform="rotate(25,692,80)"/>
+    <ellipse cx="705" cy="155" rx="18" ry="8" fill="#9aaa7a" opacity="0.32" transform="rotate(-30,705,155)"/>
+    <ellipse cx="678" cy="215" rx="16" ry="8" fill="#7a9060" opacity="0.36" transform="rotate(40,678,215)"/>
+    <ellipse cx="690" cy="290" rx="19" ry="8" fill="#8aaa70" opacity="0.28" transform="rotate(-15,690,290)"/>
+    <g transform="translate(707, 60)">
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#6090d8" opacity="0.65" transform="rotate(15)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#80aaee" opacity="0.6" transform="rotate(87)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#6090d8" opacity="0.65" transform="rotate(159)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#80aaee" opacity="0.6" transform="rotate(231)"/>
+      <ellipse cx="0" cy="-11" rx="5" ry="9" fill="#6090d8" opacity="0.65" transform="rotate(303)"/>
+      <circle cx="0" cy="0" r="4" fill="#d4b840" opacity="0.82"/>
+    </g>
+    <g transform="translate(672, 130)">
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#90b4e8" opacity="0.58" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#80a8e0" opacity="0.58" transform="rotate(60)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#90b4e8" opacity="0.53" transform="rotate(120)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#80a8e0" opacity="0.58" transform="rotate(180)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#90b4e8" opacity="0.53" transform="rotate(240)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="7" fill="#80a8e0" opacity="0.58" transform="rotate(300)"/>
+      <circle cx="0" cy="0" r="3" fill="#d0b038" opacity="0.88"/>
+    </g>
+    <g transform="translate(698, 200)">
+      <ellipse cx="0" cy="-9" rx="4" ry="7.5" fill="#5888d0" opacity="0.55" transform="rotate(20)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7.5" fill="#6898d8" opacity="0.6" transform="rotate(92)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7.5" fill="#5888d0" opacity="0.55" transform="rotate(164)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7.5" fill="#6898d8" opacity="0.6" transform="rotate(236)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7.5" fill="#5888d0" opacity="0.55" transform="rotate(308)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#d4b840" opacity="0.82"/>
+    </g>
+    <path d="M680,100 Q665,95 668,115 Q671,135 655,128" fill="none" stroke="#8a9a6a" stroke-width="1" opacity="0.38"/>
+
+    <!-- BOTTOM LEFT -->
+    <path d="M-10,1100 Q40,1040 30,970 Q20,900 60,840 Q80,800 50,730" fill="none" stroke="#7a8a5a" stroke-width="2" opacity="0.48"/>
+    <ellipse cx="30" cy="1020" rx="20" ry="9" fill="#8a9a6a" opacity="0.36" transform="rotate(30,30,1020)"/>
+    <ellipse cx="18" cy="950" rx="17" ry="8" fill="#9aaa7a" opacity="0.28" transform="rotate(-20,18,950)"/>
+    <ellipse cx="50" cy="880" rx="15" ry="7" fill="#7a9060" opacity="0.33" transform="rotate(40,50,880)"/>
+    <g transform="translate(15, 1040)">
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#6090d8" opacity="0.6" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#80aaee" opacity="0.55" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#6090d8" opacity="0.6" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#80aaee" opacity="0.55" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#6090d8" opacity="0.6" transform="rotate(288)"/>
+      <circle cx="0" cy="0" r="3.8" fill="#d4b840" opacity="0.82"/>
+    </g>
+    <g transform="translate(50, 970)">
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#90b4e8" opacity="0.55" transform="rotate(30)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#80a8e0" opacity="0.55" transform="rotate(102)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#90b4e8" opacity="0.5" transform="rotate(174)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#80a8e0" opacity="0.55" transform="rotate(246)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#90b4e8" opacity="0.5" transform="rotate(318)"/>
+      <circle cx="0" cy="0" r="2.8" fill="#d0b038" opacity="0.88"/>
+    </g>
+    <g transform="translate(25, 895)">
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#5888d0" opacity="0.52" transform="rotate(10)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#6898d8" opacity="0.57" transform="rotate(82)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#5888d0" opacity="0.52" transform="rotate(154)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#6898d8" opacity="0.57" transform="rotate(226)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#5888d0" opacity="0.52" transform="rotate(298)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#d4b840" opacity="0.82"/>
+    </g>
+
+    <!-- BOTTOM RIGHT -->
+    <path d="M730,1100 Q680,1045 690,975 Q700,905 665,845 Q645,805 675,725" fill="none" stroke="#7a8a5a" stroke-width="2" opacity="0.48"/>
+    <ellipse cx="695" cy="1025" rx="18" ry="8" fill="#8a9a6a" opacity="0.36" transform="rotate(-25,695,1025)"/>
+    <ellipse cx="705" cy="955" rx="16" ry="8" fill="#9aaa7a" opacity="0.28" transform="rotate(30,705,955)"/>
+    <ellipse cx="675" cy="878" rx="15" ry="7" fill="#7a9060" opacity="0.33" transform="rotate(-40,675,878)"/>
+    <g transform="translate(705, 1045)">
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#6090d8" opacity="0.6" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#80aaee" opacity="0.55" transform="rotate(72)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#6090d8" opacity="0.6" transform="rotate(144)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#80aaee" opacity="0.55" transform="rotate(216)"/>
+      <ellipse cx="0" cy="-10" rx="4.5" ry="8" fill="#6090d8" opacity="0.6" transform="rotate(288)"/>
+      <circle cx="0" cy="0" r="3.8" fill="#d4b840" opacity="0.82"/>
+    </g>
+    <g transform="translate(672, 973)">
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#90b4e8" opacity="0.55" transform="rotate(20)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#80a8e0" opacity="0.55" transform="rotate(92)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#90b4e8" opacity="0.5" transform="rotate(164)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#80a8e0" opacity="0.55" transform="rotate(236)"/>
+      <ellipse cx="0" cy="-8" rx="3.5" ry="6.5" fill="#90b4e8" opacity="0.5" transform="rotate(308)"/>
+      <circle cx="0" cy="0" r="2.8" fill="#d0b038" opacity="0.88"/>
+    </g>
+    <g transform="translate(698, 890)">
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#5888d0" opacity="0.52" transform="rotate(-10)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#6898d8" opacity="0.57" transform="rotate(62)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#5888d0" opacity="0.52" transform="rotate(134)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#6898d8" opacity="0.57" transform="rotate(206)"/>
+      <ellipse cx="0" cy="-9" rx="4" ry="7" fill="#5888d0" opacity="0.52" transform="rotate(278)"/>
+      <circle cx="0" cy="0" r="3.2" fill="#d4b840" opacity="0.82"/>
+    </g>
+
+    <!-- TOP CENTER arch -->
+    <path d="M240,0 Q320,-8 360,22 Q400,-8 480,0" fill="none" stroke="#8a9a6a" stroke-width="1.3" opacity="0.38"/>
+    <ellipse cx="290" cy="8" rx="11" ry="5" fill="#9aaa7a" opacity="0.32" transform="rotate(-20,290,8)"/>
+    <ellipse cx="430" cy="8" rx="11" ry="5" fill="#9aaa7a" opacity="0.32" transform="rotate(20,430,8)"/>
+    <g transform="translate(360, 16)">
+      <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" opacity="0.62" transform="rotate(0)"/>
+      <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#6898d8" opacity="0.62" transform="rotate(60)"/>
+      <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" opacity="0.62" transform="rotate(120)"/>
+      <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#6898d8" opacity="0.62" transform="rotate(180)"/>
+      <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" opacity="0.62" transform="rotate(240)"/>
+      <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#6898d8" opacity="0.62" transform="rotate(300)"/>
+      <circle cx="0" cy="0" r="2.5" fill="#d4b840" opacity="0.88"/>
+    </g>
+
+    <!-- Parchment veins -->
+    <path d="M100,0 Q360,400 620,1100" fill="none" stroke="#a08040" stroke-width="0.5" opacity="0.1"/>
+    <path d="M0,300 Q360,550 720,800" fill="none" stroke="#a08040" stroke-width="0.4" opacity="0.08"/>
+
+  </svg>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- Header ornament -->
+    <div class="header-ornament">
+      <svg viewBox="0 0 300 55" width="260" xmlns="http://www.w3.org/2000/svg" style="opacity:0.72; display:block; margin:0 auto;">
+        <g transform="translate(150,28)">
+          <ellipse cx="0" cy="-13" rx="5.5" ry="10" fill="#6090d8" transform="rotate(0)"/>
+          <ellipse cx="0" cy="-13" rx="5.5" ry="10" fill="#80aae8" transform="rotate(60)"/>
+          <ellipse cx="0" cy="-13" rx="5.5" ry="10" fill="#6090d8" transform="rotate(120)"/>
+          <ellipse cx="0" cy="-13" rx="5.5" ry="10" fill="#80aae8" transform="rotate(180)"/>
+          <ellipse cx="0" cy="-13" rx="5.5" ry="10" fill="#6090d8" transform="rotate(240)"/>
+          <ellipse cx="0" cy="-13" rx="5.5" ry="10" fill="#80aae8" transform="rotate(300)"/>
+          <circle cx="0" cy="0" r="5" fill="#d4b840"/>
+        </g>
+        <path d="M140,28 Q120,20 90,22 Q65,24 40,18" fill="none" stroke="#7a8a5a" stroke-width="1.5"/>
+        <ellipse cx="100" cy="20" rx="10" ry="5" fill="#9aaa7a" transform="rotate(-15,100,20)"/>
+        <ellipse cx="70" cy="21" rx="8" ry="4" fill="#8a9a6a" transform="rotate(10,70,21)"/>
+        <g transform="translate(40,18)">
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#90b4e8" transform="rotate(0)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" transform="rotate(72)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#90b4e8" transform="rotate(144)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" transform="rotate(216)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#90b4e8" transform="rotate(288)"/>
+          <circle cx="0" cy="0" r="2.5" fill="#d4b840"/>
+        </g>
+        <path d="M160,28 Q180,20 210,22 Q235,24 260,18" fill="none" stroke="#7a8a5a" stroke-width="1.5"/>
+        <ellipse cx="200" cy="20" rx="10" ry="5" fill="#9aaa7a" transform="rotate(15,200,20)"/>
+        <ellipse cx="230" cy="21" rx="8" ry="4" fill="#8a9a6a" transform="rotate(-10,230,21)"/>
+        <g transform="translate(260,18)">
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#90b4e8" transform="rotate(0)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" transform="rotate(72)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#90b4e8" transform="rotate(144)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#80a8e0" transform="rotate(216)"/>
+          <ellipse cx="0" cy="-7" rx="3" ry="5.5" fill="#90b4e8" transform="rotate(288)"/>
+          <circle cx="0" cy="0" r="2.5" fill="#d4b840"/>
+        </g>
+      </svg>
+    </div>
+
+    <span class="salutation">Bonita mía:</span>
+
+    <div class="letter-body">
+      <p class="paragraph">Escribo esta carta nervioso de solo pensar que vamos a cumplir un año, el primero de muchos más. Confieso que da miedo decepcionar a la bonita que tanto me da; aquella de pequitas de estrella que desde el día uno me enamora con cada una de sus cosas, de principio a fin. La que, cada día, me confirma más el porqué estoy tan enamorado de ella.</p>
+
+      <p class="paragraph">¿Recuerdas, amor mío, esa primera cita en la noche de San José? Mientras la lluvia golpeaba el paraguas y tú abrazabas mi brazo, mi corazón temblaba lleno de nervios por no gustarte o hacer algo mal. Aun así, ansiaba darte los miles de abrazos y besos que te he dado y que todavía te daré.</p>
+
+      <p class="paragraph">¿O recuerdas esa segunda cita en aquel mirador que hemos frecuentado tantas veces? Ese mirador que hasta se sonrojó al verte tan bella y luminosa. El mismo que ha sido espectador de cómo nuestra relación ha crecido, y sé que seguirá creciendo durante muchos años más.</p>
+
+      <p class="paragraph">Con este anillo, que para este momento espero haberte entregado, van también mis promesas de una vida juntos. Sé que un anillo es solo un objeto, pero en él pongo mi corazoncito de pollo. Y con los años voy a demostrarte que ese anillo —y los que vengan después— no serán promesas vacías.</p>
+
+      <p class="paragraph">Te amo, mi bonita. Me haces infinitamente feliz. Ameiz, ameiz, ameiz feliz jajajaja. El cúmulo de memorias que he creado a tu lado solo logra enamorarme más de ti, y espero que sigamos creciendo juntos y creando muchísimas más.</p>
+
+      <p class="paragraph">Reitero, una vez más, mi amor profundo hacia ti.</p>
+    </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" style="opacity:0.5; flex-shrink:0;">
+        <circle cx="12" cy="12" r="3.5" fill="#6898d8"/>
+        <ellipse cx="12" cy="4.5" rx="2.5" ry="4" fill="#80aae8" opacity="0.8"/>
+        <ellipse cx="12" cy="4.5" rx="2.5" ry="4" fill="#80aae8" opacity="0.75" transform="rotate(60,12,12)"/>
+        <ellipse cx="12" cy="4.5" rx="2.5" ry="4" fill="#6898d8" opacity="0.75" transform="rotate(120,12,12)"/>
+        <ellipse cx="12" cy="4.5" rx="2.5" ry="4" fill="#80aae8" opacity="0.75" transform="rotate(180,12,12)"/>
+        <ellipse cx="12" cy="4.5" rx="2.5" ry="4" fill="#6898d8" opacity="0.75" transform="rotate(240,12,12)"/>
+        <ellipse cx="12" cy="4.5" rx="2.5" ry="4" fill="#80aae8" opacity="0.8" transform="rotate(300,12,12)"/>
+        <circle cx="12" cy="12" r="2" fill="#d4b840"/>
+      </svg>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="closing">
+      <span>Tuyo,</span>
+      <span class="signature">Richard</span>
+      <span class="woff">I woff you ❤️</span>
+    </div>
+  </div>
+
+  <!-- EASTER EGG: Rocky from Project Hail Mary -->
+  <div class="rocky-egg" title="">
+    <div class="rocky-tooltip">
+      "It is good. You are good."<br>— Rocky, Project Hail Mary
+    </div>
+    <!-- Rocky: Astrophage-powered Eridian, spider-like silhouette -->
+    <svg width="42" height="42" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg">
+      <!-- Rocky's body - oval torso -->
+      <ellipse cx="21" cy="20" rx="9" ry="7" fill="#c8a060" stroke="#8a6030" stroke-width="1"/>
+      <!-- Rocky's head bump -->
+      <ellipse cx="21" cy="13" rx="5.5" ry="4.5" fill="#d4aa70" stroke="#8a6030" stroke-width="0.8"/>
+      <!-- Sensory organs (ammonia holes) - two dots on head -->
+      <circle cx="19" cy="12" r="1.2" fill="#5a3a10"/>
+      <circle cx="23" cy="12" r="1.2" fill="#5a3a10"/>
+      <!-- Rocky has 5 pairs of legs (Eridians are like starfish with 5 symmetry) -->
+      <!-- Front legs -->
+      <line x1="15" y1="17" x2="5" y2="12" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="15" y1="19" x2="4" y2="18" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="15" y1="21" x2="5" y2="26" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Right legs -->
+      <line x1="27" y1="17" x2="37" y2="12" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="27" y1="19" x2="38" y2="18" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="27" y1="21" x2="37" y2="26" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Bottom legs -->
+      <line x1="18" y1="26" x2="14" y2="36" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="24" y1="26" x2="28" y2="36" stroke="#8a6030" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Tiny Astrophage glow (fuel) on body -->
+      <circle cx="21" cy="20" r="3" fill="#f0a020" opacity="0.35"/>
+      <circle cx="21" cy="20" r="1.5" fill="#ffd060" opacity="0.5"/>
+    </svg>
+  </div>
+
+</div>
+</body>
+</html>
