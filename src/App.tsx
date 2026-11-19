@@ -5,6 +5,25 @@ import './App.css'
 
 const flowerCount = 140
 
+const createFlowerSpecs = () => {
+  let seed = 1617
+  const random = () => {
+    seed = (seed * 48271) % 2147483647
+    return seed / 2147483647
+  }
+
+  return Array.from({ length: flowerCount }, () => ({
+    scale: 0.8 + random() * 1.4,
+    rotate: -14 + random() * 28,
+    delay: random() * 1.1,
+    y: -6 + random() * 12,
+    xPos: random() * 100,
+    yPos: random() * 100,
+  }))
+}
+
+const flowerSpecs = createFlowerSpecs()
+
 export default function App() {
   const [phase, setPhase] = useState<'flowers-in' | 'video' | 'flowers-out'>(
     'flowers-in',
@@ -16,25 +35,21 @@ export default function App() {
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [videoTheme, setVideoTheme] = useState<'yellow' | 'blue'>('yellow')
 
   // Precompute variaciones para que cada flor florezca diferente
-  const flowers = useMemo(
-    () =>
-      Array.from({ length: flowerCount }).map(() => ({
-        scale: 0.8 + Math.random() * 1.4,
-        rotate: -14 + Math.random() * 28,
-        delay: Math.random() * 1.1,
-        y: -6 + Math.random() * 12,
-        xPos: Math.random() * 100,
-        yPos: Math.random() * 100,
-      })),
-    [],
-  )
+  const flowers = useMemo(() => flowerSpecs, [])
 
   const secretFlower = useMemo(
     () => ({
-      xPos: 10 + Math.random() * 80,
-      yPos: 10 + Math.random() * 80,
+      yellow: {
+        xPos: 24,
+        yPos: 34,
+      },
+      blue: {
+        xPos: 76,
+        yPos: 68,
+      },
     }),
     [],
   )
@@ -44,7 +59,8 @@ export default function App() {
     setPhase('flowers-out')
   }
 
-  const handleSecretClick = () => {
+  const handleSecretClick = (theme: 'yellow' | 'blue') => {
+    setVideoTheme(theme)
     setPhase('video')
     setProgress(0)
     setIsPlaying(true)
@@ -53,16 +69,6 @@ export default function App() {
       videoRef.current.currentTime = 0
       videoRef.current.muted = true
       videoRef.current.play().catch(() => setIsPlaying(false))
-    }
-  }
-
-  const restart = () => {
-    setPhase('flowers-in')
-    setProgress(0)
-    setIsPlaying(true)
-    setIsMuted(true)
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0
     }
   }
 
@@ -139,7 +145,7 @@ export default function App() {
   }
 
   return (
-    <div className="stage">
+    <div className={`stage theme-${videoTheme}`}>
       <div className="title-banner">Para mi Bonita</div>
       <div className="vine-frame" aria-hidden="true">
         <div className="vine-top" />
@@ -170,17 +176,30 @@ export default function App() {
               />
             ))}
             <motion.span
-              key="secret-flower"
-              className="flower special"
-              style={{ '--x': `${secretFlower.xPos}`, '--y': `${secretFlower.yPos}` } as CSSProperties}
+              key="yellow-secret-flower"
+              className="flower special special-yellow"
+              style={{ '--x': `${secretFlower.yellow.xPos}`, '--y': `${secretFlower.yellow.yPos}` } as CSSProperties}
               initial={{ scale: 0.2, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.2, opacity: 0 }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.6, ease: 'easeOut' }}
-              onClick={handleSecretClick}
-              aria-label="Ver el video"
+              onClick={() => handleSecretClick('yellow')}
+              aria-label="Ver el video amarillo"
+            />
+            <motion.span
+              key="blue-secret-flower"
+              className="flower special special-blue"
+              style={{ '--x': `${secretFlower.blue.xPos}`, '--y': `${secretFlower.blue.yPos}` } as CSSProperties}
+              initial={{ scale: 0.2, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.2, opacity: 0 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              onClick={() => handleSecretClick('blue')}
+              aria-label="Ver el video azul"
             />
           </motion.div>
         )}
@@ -200,7 +219,7 @@ export default function App() {
               <div className="frame-decoration" aria-hidden="true" />
               <video
                 ref={videoRef}
-                src="/video.mp4"
+                src={videoTheme === 'blue' ? '/video2.mp4' : '/video.mp4'}
                 autoPlay
                 muted
                 playsInline
